@@ -9,7 +9,7 @@ from public_transport import Public_transportView
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-TEST_CHANNEL_ID = int(os.getenv('TEST_CHANNEL_ID_AFFENHAUS'))
+TEST_CHANNEL_ID = int(os.getenv('TEST_CHANNEL_ID'))
 bot_description = "Kein Sex vor der E"
 
 
