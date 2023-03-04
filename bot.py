@@ -1,5 +1,6 @@
 import os
 import discord
+import random
 from discord.ext import commands
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -7,11 +8,10 @@ from dotenv import load_dotenv
 from public_transport import Public_transportView
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN_TEST')
-#TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv('DISCORD_TOKEN')
 TEST_CHANNEL_ID = int(os.getenv('TEST_CHANNEL_ID_AFFENHAUS'))
 bot_description = "Kein Sex vor der E"
-pt_time = 0
+
 
 intents = discord.Intents.all()
 prefix = "!"
@@ -48,18 +48,42 @@ def validate_times(time_to_validate):
         return 0
 
 
+def activity_decider():
+    activity_one = discord.Activity(type=discord.ActivityType.watching, name=f'your naked mum | Prefix: {prefix}')
+    activity_two = discord.Activity(type=discord.ActivityType.listening, name=f'your mum moaning | Prefix: {prefix}')
+    return random.choice([activity_one, activity_two])
+
+
 @bot.event
 async def on_ready():
+    await bot.change_presence(activity=activity_decider())
     await send_message("Start", f'{bot.user} is ready!', switch="server", channel=TEST_CHANNEL_ID)
     print(f'Discord Managment Bot ready!')
 
 
 @bot.command()
-async def new_pt(ctx, arg):
-    await ctx.message.delete()
-    if not validate_times(arg):
-        await ctx.send("Invalid time format, use HH:MM")
+async def msg(ctx, *args):
+    response = " ".join(args) if args else "empty :("
+    await send_message(f"Message from: {ctx.author}", response, "server", channel=ctx.channel.id)
+
+
+@bot.command()
+async def new_pt(ctx, *args):
+    if not args:
+        await send_message("Time missing", f"You need to provide the time the transport vehicle departs!\n Use this format: HH:MM\nExample: **{prefix}new_pt 13:37**", "server", channel=ctx.channel.id)
         return
+
+    if len(args) > 1:
+        await send_message("Too many arguments", f"You only need to provide the time the transport vehicle departs!\n Use this format: HH:MM\nExample: **{prefix}new_pt 13:37**", "server", channel=ctx.channel.id)
+        return
+
+    arg = args[0]
+
+    if not validate_times(arg):
+        await send_message("Invalid time format!", f"Use this format: HH:MM\nExample: **{prefix}new_pt 13:37**", "server", channel=ctx.channel.id)
+        return
+
+    await ctx.message.delete()
 
     departure_time = datetime.strptime(arg, "%H:%M")
     embed_title = "New public transport"
