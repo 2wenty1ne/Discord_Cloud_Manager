@@ -2,7 +2,7 @@ import discord
 from datetime import datetime, timedelta
 
 #? Functions:
-def create_final_public_transport_message(departure_time, shower_decision, walktime_min):
+def create_final_public_transport_message(departure_time, departure_reason, shower_decision, walktime_min):
     walking_time_difference = timedelta(minutes=walktime_min)
     start_walking_time = departure_time - walking_time_difference
 
@@ -21,7 +21,7 @@ def create_final_public_transport_message(departure_time, shower_decision, walkt
     final_transport_message_embed = discord.Embed()
     final_transport_message_embed.color = discord.Color.from_rgb(255, 51, 153)
 
-    final_transport_message_embed.title = "Your final plan!"
+    final_transport_message_embed.title = f"{departure_reason} final plan"
     final_transport_message_embed_description = f'Your transport vehicle departs at: **{departure_time.strftime("%H:%M")}**\nYou should starting walking at: **{start_walking_time.strftime("%H:%M")}**\n'
     if shower_decision:
         final_transport_message_embed_description = final_transport_message_embed_description + f'You should start showering at: **{start_shower_time.strftime("%H:%M")}**\n'
@@ -126,9 +126,10 @@ class Public_transport_custom_fail(discord.ui.Button):
 
 
 class Public_transportView(discord.ui.View):
-    def __init__(self, departure_time):
+    def __init__(self, departure_time, departure_reason):
         super().__init__(timeout=None)
         self.departure_time = departure_time
+        self.departure_reason = departure_reason
         self.entire_walktime = 0
         self.shower_bool = False
 
@@ -155,4 +156,4 @@ class Public_transportView(discord.ui.View):
 
     def view_to_final_message(self, walktime_min):
         self.clear_items()
-        return create_final_public_transport_message(self.departure_time, self.shower_bool, walktime_min)
+        return create_final_public_transport_message(self.departure_time, self.departure_reason, self.shower_bool, walktime_min)

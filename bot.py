@@ -74,8 +74,12 @@ async def new_pt(ctx, *args):
         return
 
     if len(args) > 1:
-        await send_message("Too many arguments", f"You only need to provide the time the transport vehicle departs!\n Use this format: HH:MM\nExample: **{prefix}new_pt 13:37**", "server", channel=ctx.channel.id)
-        return
+        departure_reason = ""
+        for reason in args[1:]:
+            departure_reason = f'{departure_reason} {reason}'
+        departure_reason = f'{departure_reason} -'
+    else:
+        departure_reason = "Your"
 
     arg = args[0]
 
@@ -88,7 +92,7 @@ async def new_pt(ctx, *args):
     departure_time = datetime.strptime(arg, "%H:%M")
     embed_title = "New public transport"
     embed_description = "Do you want to take a shower?"
-    await send_message(embed_title, embed_description, "server", channel=ctx.channel.id, view=Public_transportView(departure_time))
+    await send_message(embed_title, embed_description, "server", channel=ctx.channel.id, view=Public_transportView(departure_time, departure_reason))
 
 
 
