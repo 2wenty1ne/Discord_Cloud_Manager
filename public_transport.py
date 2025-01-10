@@ -1,5 +1,12 @@
+#? Classes and functions for cloud_bot.py
+
 import discord
 from datetime import datetime, timedelta
+
+MINS_TO_SHOWER = 40
+MINS_TO_GET_READY = 30
+MINS_TO_WAKE_UP = 20
+
 
 #? Functions:
 def create_final_public_transport_message(departure_time, departure_reason, shower_decision, walktime_min):
@@ -7,15 +14,15 @@ def create_final_public_transport_message(departure_time, departure_reason, show
     start_walking_time = departure_time - walking_time_difference
 
     if shower_decision:
-        shower_time_difference =  timedelta(minutes=40)
+        shower_time_difference =  timedelta(minutes=MINS_TO_SHOWER)
         start_shower_time = start_walking_time - shower_time_difference
-        geting_up_difference = timedelta(minutes=15)
-        geting_up_time = start_shower_time - geting_up_difference
+        getting_ready_difference = timedelta(minutes=MINS_TO_GET_READY)
+        geting_up_time = start_shower_time - getting_ready_difference
     else:
-        geting_up_difference = timedelta(minutes=20)
-        geting_up_time = start_walking_time - geting_up_difference
+        getting_ready_difference = timedelta(minutes=MINS_TO_GET_READY)
+        geting_up_time = start_walking_time - getting_ready_difference
 
-    first_alarm_difference = timedelta(minutes=20)
+    first_alarm_difference = timedelta(minutes=MINS_TO_WAKE_UP)
     first_alarm_time = geting_up_time - first_alarm_difference
 
     final_transport_message_embed = discord.Embed()
